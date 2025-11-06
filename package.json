@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "signvision-app",
   "version": "1.0.0",
   "description": "SignVision AR Sign Language Interpreter - Unified Application",
@@ -46,3 +47,18 @@
   },
   "homepage": "your-homepage-url"
 }
+=======
+  "name": "signvisionapp",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
+>>>>>>> b059787827af7d3e5cff87d7410934b470fab47e
