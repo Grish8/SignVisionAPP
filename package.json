@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "name": "signvision-app",
   "version": "1.0.0",
   "description": "SignVision AR Sign Language Interpreter - Unified Application",
@@ -19,7 +18,8 @@
     "test": "echo \"Running tests for all components...\" && cd sign-in-page/frontend && npm test && cd ../server && npm test"
   },
   "dependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "express": "^4.19.2"
   },
   "devDependencies": {
     "cross-env": "^7.0.3"
@@ -47,18 +47,3 @@
   },
   "homepage": "your-homepage-url"
 }
-=======
-  "name": "signvisionapp",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "express": "^4.19.2"
-  }
-}
->>>>>>> b059787827af7d3e5cff87d7410934b470fab47e

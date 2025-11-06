@@ -1431,49 +1431,83 @@ def logout():
     """Handle user logout and redirect to React app"""
     try:
         # Clear server session data
-        session.clear()
+        try:
+            session.clear()
+        except Exception as e:
+            print(f"Session clear error: {e}")
+        
+        # Stop any running processes
+        global is_running_sign, is_playing_text, is_listening, ar_display, ar_headset
+        
+        try:
+            # Stop sign-to-voice
+            is_running_sign = False
+            
+            # Stop text-to-sign
+            is_playing_text = False
+            
+            # Stop voice-to-sign
+            is_listening = False
+        except Exception as e:
+            print(f"Error stopping processes: {e}")
+        
+        # Clean up AR displays with robust error handling
+        if ar_display:
+            try:
+                ar_display.is_listening = False
+                ar_display.video_playing = False
+            except Exception:
+                pass
+            
+            try:
+                if hasattr(ar_display, 'video_thread') and ar_display.video_thread:
+                    if ar_display.video_thread.is_alive():
+                        ar_display.video_thread.join(timeout=1)
+            except Exception:
+                pass
+            
+            try:
+                if hasattr(ar_display, 'cap') and ar_display.cap:
+                    ar_display.cap.release()
+            except Exception:
+                pass
+            
+            ar_display = None
+            
+        if ar_headset:
+            try:
+                ar_headset.listening = False
+            except Exception:
+                pass
+            
+            try:
+                if hasattr(ar_headset, 'cap') and ar_headset.cap:
+                    ar_headset.cap.release()
+            except Exception:
+                pass
+            
+            ar_headset = None
         
         # Create redirect response to React app
         response = redirect('http://localhost:5173/')
         
         # Clear all authentication-related cookies
-        response.delete_cookie('session')
-        response.delete_cookie('auth_token')
-        response.delete_cookie('user_id')
-        response.delete_cookie('username')
-        response.delete_cookie('remember_me')
+        try:
+            response.delete_cookie('session')
+            response.delete_cookie('auth_token')
+            response.delete_cookie('user_id')
+            response.delete_cookie('username')
+            response.delete_cookie('remember_me')
+        except Exception as e:
+            print(f"Cookie clear error: {e}")
         
-        # Stop any running processes
-        global is_running_sign, is_playing_text, is_listening, ar_display, ar_headset
-        
-        # Stop sign-to-voice
-        is_running_sign = False
-        
-        # Stop text-to-sign
-        is_playing_text = False
-        
-        # Stop voice-to-sign
-        is_listening = False
-        
-        # Clean up AR displays
-        if ar_display:
-            ar_display.is_listening = False
-            ar_display.video_playing = False
-            if hasattr(ar_display, 'cap') and ar_display.cap:
-                ar_display.cap.release()
-            ar_display = None
-            
-        if ar_headset:
-            ar_headset.listening = False
-            if hasattr(ar_headset, 'cap') and ar_headset.cap:
-                ar_headset.cap.release()
-            ar_headset = None
-        
-        print("✅ User logged out successfully - redirected to React app")
+        print("User logged out successfully - redirected to React app")
         return response
         
     except Exception as e:
-        print(f"❌ Logout error: {e}")
+        print(f"Logout error: {e}")
+        import traceback
+        traceback.print_exc()
         # Fallback redirect even if there's an error
         return redirect('http://localhost:5173/')
 
