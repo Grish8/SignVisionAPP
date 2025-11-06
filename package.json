@@ -1,0 +1,48 @@
+{
+  "name": "signvision-app",
+  "version": "1.0.0",
+  "description": "SignVision AR Sign Language Interpreter - Unified Application",
+  "scripts": {
+    "dev": "concurrently --kill-others-on-fail \"npm run backend\" \"npm run frontend\" \"npm run flask\"",
+    "dev-browser": "concurrently --kill-others-on-fail \"npm run backend\" \"npm run frontend\" \"npm run flask\" \"npm run delay-browser\"",
+    "start": "concurrently --kill-others-on-fail \"npm run backend\" \"npm run frontend\" \"npm run flask\"",
+    "delay-browser": "timeout 8 && start http://localhost:5173",
+    "backend": "cd sign-in-page/server && npm start",
+    "frontend": "cd sign-in-page/frontend && npm run dev",
+    "flask": "python app.py",
+    "install-all": "npm install && cd sign-in-page/frontend && npm install && cd ../server && npm install && cd ../..",
+    "build": "cd sign-in-page/frontend && npm run build",
+    "preview": "cd sign-in-page/frontend && npm run preview",
+    "setup": "npm run install-all",
+    "clean": "rmdir /s node_modules && cd sign-in-page/frontend && rmdir /s node_modules && cd ../server && rmdir /s node_modules",
+    "test": "echo \"Running tests for all components...\" && cd sign-in-page/frontend && npm test && cd ../server && npm test"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  },
+  "keywords": [
+    "sign-language",
+    "ar",
+    "react",
+    "flask",
+    "express",
+    "authentication"
+  ],
+  "author": "SignVision Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0",
+    "python": ">=3.8.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "your-repository-url"
+  },
+  "bugs": {
+    "url": "your-issues-url"
+  },
+  "homepage": "your-homepage-url"
+}

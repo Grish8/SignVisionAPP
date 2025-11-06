@@ -1,0 +1,392 @@
+{% extends "base.html" %}
+
+{% block title %}Voice to Sign{% endblock %}
+
+{% block styles %}
+<style>
+    .voice-to-sign-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .voice-to-sign-container h2 {
+        color: var(--primary-color);
+        margin-bottom: 2rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.8rem;
+    }
+
+    .conversion-area {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .input-output-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        padding: 2rem;
+    }
+
+    .controls-section, .output-section {
+        display: flex;
+        flex-direction: column;
+    }
+
+    h3 {
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+        font-weight: 500;
+        font-size: 1.2rem;
+    }
+
+    .control-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: var(--border-radius);
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        font-size: 1rem;
+        flex: 1;
+        justify-content: center;
+    }
+
+    .start-btn {
+        background-color: var(--success-color);
+        color: white;
+    }
+
+    .start-btn:hover {
+        background-color: #3a9e36;
+        transform: translateY(-2px);
+    }
+
+    .stop-btn {
+        background-color: var(--error-color);
+        color: white;
+    }
+
+    .stop-btn:hover {
+        background-color: #d90429;
+        transform: translateY(-2px);
+    }
+
+    .status-indicator {
+        margin-bottom: 1.5rem;
+    }
+
+    #listening-indicator {
+        padding: 0.8rem 1rem;
+        border-radius: var(--border-radius);
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .indicator-off {
+        background-color: #f8f9fa;
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+    }
+
+    .indicator-on {
+        background-color: rgba(75, 181, 67, 0.1);
+        color: var(--success-color);
+        border: 1px solid rgba(75, 181, 67, 0.3);
+    }
+
+    .indicator-on i {
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.3; }
+        100% { opacity: 1; }
+    }
+
+    .recognized-text {
+        background: #f8f9fa;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+
+    #recognized-text-display {
+        min-height: 120px;
+        padding: 1rem;
+        background: white;
+        border-radius: calc(var(--border-radius) - 4px);
+        margin-top: 1rem;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .buffer-text {
+        color: var(--primary-color);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .processed-text {
+        color: var(--success-color);
+        font-weight: 500;
+        padding-top: 0.5rem;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .video-container {
+        position: relative;
+        width: 100%;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: #000;
+        aspect-ratio: 4/3;
+        flex-grow: 1;
+    }
+
+    #video-feed {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .home-btn {
+        display: block;
+        width: fit-content;
+        margin: 0 auto;
+        padding: 0.8rem 1.5rem;
+        background-color: #FF3A0F;
+        color: var(--dark-color);
+        text-decoration: none;
+        border-radius: var(--border-radius);
+        border: 1px solid #dee2e6;
+        transition: var(--transition);
+        text-align: center;
+    }
+
+    .home-btn:hover {
+        background-color: #e9ecef;
+        transform: translateY(-2px);
+    }
+
+    .instructions {
+        background: #f1f3ff;
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .instructions h4 {
+        color: var(--primary-color);
+        margin-bottom: 0.8rem;
+    }
+
+    .instructions ol {
+        padding-left: 1.2rem;
+    }
+
+    .instructions li {
+        margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 992px) {
+        .input-output-wrapper {
+            grid-template-columns: 1fr;
+            padding: 1.5rem;
+        }
+        
+        .control-buttons {
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .voice-to-sign-container {
+            padding: 1.5rem 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="voice-to-sign-container">
+    <h2><i class="fas fa-microphone"></i> Voice to Sign Conversion</h2>
+    
+     <div class="instructions">
+                    <h4>How to use:</h4>
+                    <ol>
+                        <li>Ensure you have a working microphone</li>
+                        <li>Click "Start Listening" to activate voice recognition</li>
+                        <li>Speak clearly in short phrases (5 word chunks)</li>
+                        <li>View real-time sign language translation</li>
+                        <li>Click "Stop Listening" when finished</li>
+                    </ol>
+                </div>
+
+    <div class="conversion-area">
+        <div class="input-output-wrapper">
+            <!-- Controls Section -->
+            <div class="controls-section">
+                <div class="control-buttons">
+                    <button id="start-btn" class="btn start-btn">
+                        <i class="fas fa-microphone"></i> Start Listening
+                    </button>
+                    <button id="stop-btn" class="btn stop-btn" disabled>
+                        <i class="fas fa-stop"></i> Stop Listening
+                    </button>
+                </div>
+                
+                <div class="status-indicator">
+                    <div id="listening-indicator" class="indicator-off">
+                        <i class="fas fa-circle"></i> Microphone Off
+                    </div>
+                </div>
+                
+                <div class="recognized-text">
+                    <h3>Speech Recognition</h3>
+                    <div id="recognized-text-display">
+                        <div class="buffer-text">Current words: (0/5)</div>
+                        <div class="processed-text"></div>
+                    </div>
+                </div>
+                
+               
+            </div>
+            
+            <!-- Output Section -->
+            <div class="output-section">
+                <h3>Sign Language Translation</h3>
+                <div class="video-container">
+                    <img id="video-feed" src="{{ url_for('video_feed_voice') }}" alt="Sign language animation">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <a href="/" class="btn home-btn">
+        <i class="fas fa-home"></i> Back to Home
+    </a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const listeningIndicator = document.getElementById('listening-indicator');
+        
+        // Update recognized text
+        function updateRecognizedText() {
+            fetch('/get_recognized_texts')
+                .then(response => response.json())
+                .then(data => {
+                    const display = document.getElementById('recognized-text-display');
+                    
+                    // Update buffer text
+                    const bufferText = display.querySelector('.buffer-text');
+                    bufferText.textContent = `Current words: ${data.current_text || ''} (${data.word_count || 0}/5)`;
+                    
+                    // Update processed text
+                    const processedText = display.querySelector('.processed-text');
+                    processedText.textContent = data.processed_text ? `Signing: ${data.processed_text}` : '';
+                    
+                    setTimeout(updateRecognizedText, 500);
+                })
+                .catch(error => {
+                    console.error('Error fetching recognized text:', error);
+                    setTimeout(updateRecognizedText, 1000);
+                });
+        }
+
+        // Start button click handler
+        startBtn.addEventListener('click', function() {
+            startBtn.disabled = true;
+            startBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting...';
+            
+            fetch('/start_listening', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    stopBtn.disabled = false;
+                    listeningIndicator.classList.remove('indicator-off');
+                    listeningIndicator.classList.add('indicator-on');
+                    listeningIndicator.innerHTML = '<i class="fas fa-circle"></i> Listening...';
+                    updateRecognizedText();
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to start listening'));
+                }
+                startBtn.disabled = false;
+                startBtn.innerHTML = '<i class="fas fa-microphone"></i> Start Listening';
+            })
+            .catch(error => {
+                alert('Connection error: ' + error);
+                startBtn.disabled = false;
+                startBtn.innerHTML = '<i class="fas fa-microphone"></i> Start Listening';
+            });
+        });
+        
+        // Stop button click handler
+        stopBtn.addEventListener('click', function() {
+            stopBtn.disabled = true;
+            stopBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Stopping...';
+            
+            fetch('/stop_listening', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    startBtn.disabled = false;
+                    listeningIndicator.classList.remove('indicator-on');
+                    listeningIndicator.classList.add('indicator-off');
+                    listeningIndicator.innerHTML = '<i class="fas fa-circle"></i> Microphone Off';
+                }
+                stopBtn.disabled = true;
+                stopBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Listening';
+            })
+            .catch(error => {
+                alert('Error stopping listener: ' + error);
+                stopBtn.disabled = false;
+                stopBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Listening';
+            });
+        });
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && !stopBtn.disabled) {
+                stopBtn.click();
+            }
+        });
+    });
+</script>
+{% endblock %}

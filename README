@@ -1,0 +1,5 @@
+Install the required dependencies
+open app.py 
+run in the terminal: python app.py
+
+You will be able to access the interface at http://127.0.0.1:5000/

@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block styles %}
+<style>
+    .home-content {
+        padding: 2rem 0;
+    }
+
+    .welcome-section {
+        text-align: center;
+        margin-bottom: 4rem;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 0 1rem;
+    }
+
+    .welcome-section h2 {
+        font-size: 2.8rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .welcome-section p {
+        font-size: 1.2rem;
+        color: var(--dark-color);
+        opacity: 0.85;
+        line-height: 1.6;
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .conversion-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2.5rem;
+        margin-top: 3rem;
+    }
+
+    .conversion-card {
+        background: var(--surface-color);
+        border-radius: var(--border-radius);
+        padding: 2.5rem 2rem;
+        text-align: center;
+        text-decoration: none;
+        color: var(--dark-color);
+        transition: var(--transition);
+        box-shadow: var(--box-shadow);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dark .conversion-card {
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .conversion-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.5s ease;
+    }
+
+    .conversion-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .conversion-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .card-icon {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.8rem;
+        font-size: 2.2rem;
+        color: white;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: var(--transition);
+    }
+
+    .conversion-card:hover .card-icon {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .voice-icon {
+        background: linear-gradient(135deg, #4361ee, #4cc9f0);
+    }
+
+    .text-icon {
+        background: linear-gradient(135deg, #7209b7, #b5179e);
+    }
+
+    .sign-icon {
+        background: linear-gradient(135deg, #f59e0b, #f77f00);
+    }
+
+    .ar-icon {
+        background: linear-gradient(135deg, #3a0ca3, #4cc9f0);
+    }
+
+    .conversion-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1.2rem;
+        color: var(--dark-color);
+        font-weight: 600;
+        position: relative;
+        z-index: 1;
+    }
+
+    .conversion-card p {
+        color: var(--dark-color);
+        opacity: 0.8;
+        font-size: 1rem;
+        line-height: 1.6;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stats-section {
+        margin-top: 5rem;
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.05), rgba(76, 201, 240, 0.05));
+        border-radius: var(--border-radius);
+        text-align: center;
+    }
+
+    .dark .stats-section {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(76, 201, 240, 0.1));
+    }
+
+    .stats-section h3 {
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+        color: var(--dark-color);
+        font-weight: 600;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        color: var(--dark-color);
+        opacity: 0.8;
+    }
+
+    .feature-highlights {
+        margin-top: 5rem;
+        text-align: center;
+    }
+
+    .feature-highlights h3 {
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+        color: var(--dark-color);
+        font-weight: 600;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .feature-item {
+        padding: 1.5rem;
+        background: var(--surface-color);
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+    }
+
+    .feature-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-item i {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .feature-item h4 {
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
+        color: var(--dark-color);
+    }
+
+    .feature-item p {
+        font-size: 0.9rem;
+        color: var(--dark-color);
+        opacity: 0.8;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+        .welcome-section h2 {
+            font-size: 2.2rem;
+        }
+        
+        .welcome-section p {
+            font-size: 1.1rem;
+        }
+        
+        .conversion-options {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .conversion-card {
+            padding: 2rem 1.5rem;
+        }
+        
+        .stats-section {
+            padding: 2rem 1rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .welcome-section h2 {
+            font-size: 1.8rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="home-content">
+    <div class="welcome-section">
+        <h2>Sign Language Interpreter</h2>
+        <p>Bridging communication gaps between sign language users and non-signers through advanced AI technology. Experience seamless translation in multiple modes.</p>
+    </div>
+    
+    <div class="conversion-options">
+        <a href="/voice_to_sign" class="conversion-card">
+            <div class="card-icon voice-icon">
+                <i class="fas fa-microphone"></i>
+            </div>
+            <h3>Voice to Sign</h3>
+            <p>Speak naturally and see your words translated into sign language animations in real-time with our advanced speech recognition technology.</p>
+        </a>
+        
+        <a href="/text_to_sign" class="conversion-card">
+            <div class="card-icon text-icon">
+                <i class="fas fa-keyboard"></i>
+            </div>
+            <h3>Text to Sign</h3>
+            <p>Type your message and watch it come to life through accurate sign language representation with smooth animations.</p>
+        </a>
+        
+        <a href="/sign_to_voice" class="conversion-card">
+            <div class="card-icon sign-icon">
+                <i class="fas fa-sign-language"></i>
+            </div>
+            <h3>Sign to Voice</h3>
+            <p>Use your webcam to perform signs and get instant voice translation of your message using our computer vision technology.</p>
+        </a>
+
+        <a href="/ar_display" class="conversion-card">
+            <div class="card-icon ar-icon">
+                <i class="fas fa-vr-cardboard"></i>
+            </div>
+            <h3>AR Display</h3>
+            <p>Experience augmented reality sign language translation with real-time camera overlay for immersive communication.</p>
+        </a>
+
+        <a href="/ar_headset" class="conversion-card">
+            <div class="card-icon ar-icon">
+                <i class="fas fa-glasses"></i>
+            </div>
+            <h3>AR Words Display</h3>
+            <p>Experience speech recognition in an augmented reality simulation with visual feedback for enhanced interaction.</p>
+        </a>
+    </div>
+
+    
+
+    
+</div>
+{% endblock %}

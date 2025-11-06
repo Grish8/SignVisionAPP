@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en" class="{{ 'dark' if settings.get('theme', 'light') == 'dark' else '' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #3B82F6;
+            --color-secondary: #2563EB;
+            --color-bg: #F3F4F6;
+            --color-text: #111827;
+            --color-card: #FFFFFF;
+            --color-border: #E5E7EB;
+        }
+        
+        .dark {
+            --color-primary: #1E40AF;
+            --color-secondary: #1E3A8A;
+            --color-bg: #111827;
+            --color-text: #F3F4F6;
+            --color-card: #1F2937;
+            --color-border: #374151;
+        }
+        
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        .settings-card {
+            transition: all 0.3s ease;
+            background-color: var(--color-card);
+            border: 1px solid var(--color-border);
+        }
+        
+        .settings-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #68D391;
+        }
+        
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #68D391;
+        }
+        
+        .accent-blue {
+            accent-color: var(--color-primary);
+        }
+        
+        .text-muted {
+            color: var(--color-text);
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold" style="color: var(--color-text)">Settings</h1>
+            <a href="/" class="text-blue-500 hover:text-blue-700">
+                <i class="fas fa-arrow-left mr-2"></i> Back to App
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- AR/VR Headset Mode -->
+            <div class="settings-card rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--color-text)">
+                    <i class="fas fa-vr-cardboard mr-2 text-blue-500"></i> AR/VR Headset Mode
+                </h2>
+                <div class="flex items-center justify-between">
+                    <span class="text-muted">Enable AR/VR Mode</span>
+                    <label class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" id="ar_vr_mode" class="toggle-checkbox sr-only" 
+                                   {% if settings.get('ar_vr_mode', False) %}checked{% endif %}>
+                            <div class="toggle-label block bg-gray-300 w-12 h-6 rounded-full"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition"></div>
+                        </div>
+                    </label>
+                </div>
+                <p class="text-sm text-muted mt-2">Toggle between standard and immersive AR/VR modes</p>
+            </div>
+
+            <!-- Input/Output Modes -->
+            <div class="settings-card rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--color-text)">
+                    <i class="fas fa-exchange-alt mr-2 text-blue-500"></i> Input/Output Modes
+                </h2>
+                
+                <div class="mb-4">
+                    <label class="block text-muted mb-2">Input Mode</label>
+                    <select id="input_mode" class="w-full p-2 border rounded" style="background-color: var(--color-card); border-color: var(--color-border); color: var(--color-text)">
+                        <option value="voice" {% if settings.get('input_mode', 'voice') == 'voice' %}selected{% endif %}>Voice</option>
+                        <option value="text" {% if settings.get('input_mode', 'voice') == 'text' %}selected{% endif %}>Text</option>
+                        <option value="gesture" {% if settings.get('input_mode', 'voice') == 'gesture' %}selected{% endif %}>Gesture</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-muted mb-2">Output Mode</label>
+                    <select id="output_mode" class="w-full p-2 border rounded" style="background-color: var(--color-card); border-color: var(--color-border); color: var(--color-text)">
+                        <option value="sign" {% if settings.get('output_mode', 'sign') == 'sign' %}selected{% endif %}>Sign Language</option>
+                        <option value="voice" {% if settings.get('output_mode', 'sign') == 'voice' %}selected{% endif %}>Voice</option>
+                        <option value="text" {% if settings.get('output_mode', 'sign') == 'text' %}selected{% endif %}>Text</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Voice and Sign Settings -->
+            <div class="settings-card rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--color-text)">
+                    <i class="fas fa-sign-language mr-2 text-blue-500"></i> Voice & Sign Settings
+                </h2>
+                
+                <div class="mb-4">
+                    <label class="block text-muted mb-2">Voice Speed</label>
+                    <input type="range" id="voice_speed" min="50" max="200" 
+                           value="{{ settings.get('voice_speed', 100) }}" 
+                           class="w-full accent-blue">
+                    <div class="flex justify-between text-xs text-muted">
+                        <span>Slow</span>
+                        <span>Normal</span>
+                        <span>Fast</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-muted mb-2">Sign Size</label>
+                    <input type="range" id="sign_size" min="100" max="300" 
+                           value="{{ settings.get('sign_size', 200) }}" 
+                           class="w-full accent-blue">
+                    <div class="flex justify-between text-xs text-muted">
+                        <span>Small</span>
+                        <span>Medium</span>
+                        <span>Large</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accessibility Settings -->
+            <div class="settings-card rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--color-text)">
+                    <i class="fas fa-universal-access mr-2 text-blue-500"></i> Accessibility
+                </h2>
+                
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-muted">High Contrast Mode</span>
+                    <label class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" id="high_contrast" class="toggle-checkbox sr-only"
+                                   {% if settings.get('high_contrast', False) %}checked{% endif %}>
+                            <div class="toggle-label block bg-gray-300 w-12 h-6 rounded-full"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition"></div>
+                        </div>
+                    </label>
+                </div>
+                
+                <div>
+                    <label class="block text-muted mb-2">Text Size</label>
+                    <input type="range" id="text_size" min="12" max="24" 
+                           value="{{ settings.get('text_size', 16) }}" 
+                           class="w-full accent-blue">
+                    <div class="flex justify-between text-xs text-muted">
+                        <span>Small</span>
+                        <span>Medium</span>
+                        <span>Large</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connectivity and Device Settings -->
+            <div class="settings-card rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--color-text)">
+                    <i class="fas fa-plug mr-2 text-blue-500"></i> Connectivity
+                </h2>
+                
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-muted">Bluetooth</span>
+                    <label class="flex items-center cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" id="bluetooth_enabled" class="toggle-checkbox sr-only"
+                                   {% if settings.get('bluetooth_enabled', False) %}checked{% endif %}>
+                            <div class="toggle-label block bg-gray-300 w-12 h-6 rounded-full"></div>
+                            <div class="dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition"></div>
+                        </div>
+                    </label>
+                </div>
+                
+                <div>
+                    <label class="block text-muted mb-2">Device</label>
+                    <select class="w-full p-2 border rounded" style="background-color: var(--color-card); border-color: var(--color-border); color: var(--color-text)">
+                        <option>Default Camera</option>
+                        <option>External Camera</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- User Preferences -->
+            <div class="settings-card rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--color-text)">
+                    <i class="fas fa-user-cog mr-2 text-blue-500"></i> Preferences
+                </h2>
+                
+                <div class="mb-4">
+                    <label class="block text-muted mb-2">Theme</label>
+                    <select id="theme" class="w-full p-2 border rounded" style="background-color: var(--color-card); border-color: var(--color-border); color: var(--color-text)">
+                        <option value="light" {% if settings.get('theme', 'light') == 'light' %}selected{% endif %}>Light</option>
+                        <option value="dark" {% if settings.get('theme', 'light') == 'dark' %}selected{% endif %}>Dark</option>
+                        <option value="system" {% if settings.get('theme', 'light') == 'system' %}selected{% endif %}>System Default</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-muted mb-2">Language</label>
+                    <select class="w-full p-2 border rounded" style="background-color: var(--color-card); border-color: var(--color-border); color: var(--color-text)">
+                        <option>English</option>
+                        <option>Spanish</option>
+                        <option>French</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Help and Support -->
+            <div class="settings-card rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--color-text)">
+                    <i class="fas fa-question-circle mr-2 text-blue-500"></i> Help & Support
+                </h2>
+                
+                <div class="space-y-3">
+                    <a href="#" class="flex items-center text-blue-500 hover:text-blue-700">
+                        <i class="fas fa-book mr-2"></i> User Guide
+                    </a>
+                    <a href="#" class="flex items-center text-blue-500 hover:text-blue-700">
+                        <i class="fas fa-video mr-2"></i> Tutorial Videos
+                    </a>
+                    <a href="#" class="flex items-center text-blue-500 hover:text-blue-700">
+                        <i class="fas fa-envelope mr-2"></i> Contact Support
+                    </a>
+                    <a href="#" class="flex items-center text-blue-500 hover:text-blue-700">
+                        <i class="fas fa-info-circle mr-2"></i> About
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 flex justify-end">
+            <button id="saveSettings" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition">
+                Save Settings
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize theme based on current setting
+            const currentTheme = "{{ settings.get('theme', 'light') }}";
+            applyTheme(currentTheme);
+
+            // Toggle switches
+            document.querySelectorAll('.toggle-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const label = this.nextElementSibling;
+                    const dot = this.nextElementSibling.nextElementSibling;
+                    
+                    if (this.checked) {
+                        dot.style.transform = 'translateX(1.5rem)';
+                        label.classList.add('bg-green-400');
+                    } else {
+                        dot.style.transform = 'translateX(0)';
+                        label.classList.remove('bg-green-400');
+                    }
+                });
+            });
+
+            // Theme selector change handler
+            document.getElementById('theme').addEventListener('change', function() {
+                applyTheme(this.value);
+            });
+
+            // Save settings
+            document.getElementById('saveSettings').addEventListener('click', function() {
+                const settings = {
+                    ar_vr_mode: document.getElementById('ar_vr_mode').checked,
+                    input_mode: document.getElementById('input_mode').value,
+                    output_mode: document.getElementById('output_mode').value,
+                    voice_speed: parseInt(document.getElementById('voice_speed').value),
+                    sign_size: parseInt(document.getElementById('sign_size').value),
+                    high_contrast: document.getElementById('high_contrast').checked,
+                    text_size: parseInt(document.getElementById('text_size').value),
+                    bluetooth_enabled: document.getElementById('bluetooth_enabled').checked,
+                    theme: document.getElementById('theme').value
+                };
+
+                fetch('/update_settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(settings)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        showToast('Settings saved successfully!');
+                        // Update theme immediately
+                        applyTheme(data.settings?.theme || currentTheme);
+                    } else {
+                        showToast('Error saving settings: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Error saving settings', 'error');
+                });
+            });
+
+            // Apply theme function
+            function applyTheme(theme) {
+                if (theme === 'system') {
+                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    document.documentElement.classList.toggle('dark', prefersDark);
+                } else {
+                    document.documentElement.classList.toggle('dark', theme === 'dark');
+                }
+                localStorage.setItem('theme', theme);
+            }
+
+            // Toast notification function
+            function showToast(message, type = 'success') {
+                const toast = document.createElement('div');
+                toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-md shadow-lg ${
+                    type === 'success' ? 'bg-green-500' : 'bg-red-500'
+                } text-white`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>

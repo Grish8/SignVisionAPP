@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}AR Sign Language Display{% endblock %}
+
+{% block styles %}
+<style>
+    .ar-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: center;
+    }
+    h1 {
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .video-container {
+        position: relative;
+        margin: 0 auto;
+        width: 640px;
+        height: 480px;
+        border: 3px solid #3498db;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    #videoFeed {
+        width: 100%;
+        height: 100%;
+        background-color: black;
+    }
+    .controls {
+        margin-top: 20px;
+    }
+    button {
+        padding: 10px 20px;
+        margin: 0 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #3498db;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    button:hover {
+        background-color: #2980b9;
+    }
+    #stopBtn {
+        background-color: #e74c3c;
+    }
+    #stopBtn:hover {
+        background-color: #c0392b;
+    }
+    #backBtn {
+        background-color: #27ae60;
+    }
+    #backBtn:hover {
+        background-color: #229954;
+    }
+    .status {
+        margin-top: 15px;
+        font-size: 18px;
+        color: #2c3e50;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ar-container">
+    <h1>AR Sign Language Display</h1>
+
+    <div class="video-container">
+        <img id="videoFeed" src="">
+    </div>
+
+    <div class="controls">
+        <button id="backBtn">Back to Home</button>
+        <button id="startBtn">Start</button>
+        <button id="stopBtn">Stop</button>
+    </div>
+
+    <div class="status" id="statusDisplay">
+        Status: Ready
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('startBtn').addEventListener('click', function() {
+        fetch('/start_ar_display', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('statusDisplay').textContent = 'Status: Running';
+                document.getElementById('videoFeed').src = "{{ url_for('video_feed_ar') }}";
+            } else {
+                document.getElementById('statusDisplay').textContent = 'Status: Error - ' + (data.message || 'Unknown error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('statusDisplay').textContent = 'Status: Error starting';
+        });
+    });
+
+    document.getElementById('stopBtn').addEventListener('click', function() {
+        fetch('/stop_ar_display', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('statusDisplay').textContent = 'Status: Stopped';
+                document.getElementById('videoFeed').src = "";
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('statusDisplay').textContent = 'Status: Error stopping';
+        });
+    });
+
+    document.getElementById('backBtn').addEventListener('click', function() {
+        window.location.href = '/';
+    });
+</script>
+{% endblock %}

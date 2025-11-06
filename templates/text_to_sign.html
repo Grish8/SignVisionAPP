@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+
+{% block title %}Text to Sign{% endblock %}
+
+{% block styles %}
+<style>
+    .text-to-sign-container {
+        
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .text-to-sign-container h2 {
+        color: var(--primary-color);
+        margin-bottom: 2rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.8rem;
+    }
+
+    .conversion-area {
+        background: black;
+       
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .input-output-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        padding: 2rem;
+    }
+
+    .input-section, .output-section {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    h3 {
+        color: rgba(255, 255, 255, 0.353);
+        margin-bottom: 1rem;
+        font-weight: 500;
+        font-size: 1.2rem;
+    }
+
+    #input-text {
+        background-color: #0F172A;
+        color: white;
+        width: 100%;
+        min-height: 300px;
+        padding: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.397);
+        border-radius: var(--border-radius);
+        font-family: 'Poppins', sans-serif;
+        font-size: 1rem;
+        resize: vertical;
+        margin-bottom: 1.5rem;
+        transition: var(--transition);
+    }
+
+    #input-text:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+    }
+
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: auto;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: var(--border-radius);
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        font-size: 1rem;
+        flex: 1;
+        justify-content: center;
+    }
+
+    .convert-btn {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .convert-btn:hover {
+        background-color: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+
+    .stop-btn {
+        background-color: var(--error-color);
+        color: white;
+    }
+
+    .stop-btn:hover {
+        background-color: #d90429;
+        transform: translateY(-2px);
+    }
+
+    .video-container {
+        position: relative;
+        width: 100%;
+        min-height: 200px;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: #000;
+        aspect-ratio: 4/3;
+        flex-grow: 1;
+    }
+
+    #video-feed {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .status-message {
+        text-align: center;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: var(--border-radius);
+        font-weight: 500;
+    }
+
+    .home-btn {
+        display: block;
+        width: fit-content;
+        margin: 0 auto;
+        padding: 0.8rem 1.5rem;
+        background-color: #FF3A0F;
+        color: var(--dark-color);
+        text-decoration: none;
+        border-radius: var(--border-radius);
+        border: 1px solid #dee2e6;
+        transition: var(--transition);
+        text-align: center;
+    }
+
+    .home-btn:hover {
+        background-color: #e9ecef;
+        transform: translateY(-2px);
+    }
+
+    .instructions {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .instructions h3 {
+        color: var(--primary-color);
+        margin-bottom: 0.8rem;
+    }
+
+    .instructions ul {
+        padding-left: 1.2rem;
+    }
+
+    .instructions li {
+        margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 992px) {
+        .input-output-wrapper {
+            grid-template-columns: 1fr;
+            padding: 1.5rem;
+        }
+        
+        #input-text {
+            min-height: 150px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .text-to-sign-container {
+            padding: 1.5rem 1rem;
+        }
+        
+        .button-group {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="text-to-sign-container">
+    <h2><i class="fas fa-keyboard"></i> Text to Sign Conversion</h2>
+    
+    <div class="instructions">
+        <h3>How to use this converter:</h3>
+        <ul>
+            <li>Type or paste your text in the input box</li>
+            <li>Click "Convert" to generate sign language animation</li>
+            <li>View the sign language output in real-time</li>
+            <li>Use "Stop" to end the playback at any time</li>
+        </ul>
+    </div>
+    
+    <div class="conversion-area">
+        <div class="input-output-wrapper">
+            <!-- Input Section -->
+            <div class="input-section">
+                <h3>Enter Your Text</h3>
+                <textarea id="input-text" placeholder="Type or paste your text here to convert to sign language..."></textarea>
+                <div class="button-group">
+                    <button id="convert-btn" class="btn convert-btn">
+                        <i class="fas fa-play"></i> Convert to Sign
+                    </button>
+                    <button id="stop-btn" class="btn stop-btn">
+                        <i class="fas fa-stop"></i> Stop Playback
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Output Section -->
+            <div class="output-section">
+                <h3>Sign Language Output</h3>
+                <div class="video-container">
+                    <img id="video-feed" src="{{ url_for('video_feed_text') }}" alt="Sign language animation">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="status-message" id="status-message">
+        Ready for conversion
+    </div>
+    
+    <a href="/" class="btn home-btn">
+        <i class="fas fa-home"></i> Back to Home
+    </a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const convertBtn = document.getElementById('convert-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const inputText = document.getElementById('input-text');
+        const statusMessage = document.getElementById('status-message');
+        
+        // Convert button click handler
+        convertBtn.addEventListener('click', function() {
+            const text = inputText.value.trim();
+            if (!text) {
+                showStatusMessage('Please enter some text to convert', 'error');
+                inputText.focus();
+                return;
+            }
+            
+            showStatusMessage('Processing your text...', 'processing');
+            convertBtn.disabled = true;
+            convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            
+            fetch('/process_text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `text=${encodeURIComponent(text)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showStatusMessage('Playing sign language animation', 'success');
+                } else {
+                    showStatusMessage(data.message || 'Error processing text', 'error');
+                }
+                convertBtn.disabled = false;
+                convertBtn.innerHTML = '<i class="fas fa-play"></i> Convert to Sign';
+            })
+            .catch(error => {
+                showStatusMessage('Connection error: ' + error, 'error');
+                convertBtn.disabled = false;
+                convertBtn.innerHTML = '<i class="fas fa-play"></i> Convert to Sign';
+            });
+        });
+        
+        // Stop button click handler
+        stopBtn.addEventListener('click', function() {
+            showStatusMessage('Stopping playback...', 'processing');
+            stopBtn.disabled = true;
+            stopBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Stopping...';
+            
+            fetch('/stop_text_to_sign')
+            .then(response => response.json())
+            .then(data => {
+                showStatusMessage('Playback stopped', 'info');
+                stopBtn.disabled = false;
+                stopBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Playback';
+            })
+            .catch(error => {
+                showStatusMessage('Error stopping playback', 'error');
+                stopBtn.disabled = false;
+                stopBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Playback';
+            });
+        });
+        
+        // Status message helper function
+        function showStatusMessage(message, type) {
+            statusMessage.textContent = message;
+            switch(type) {
+                case 'error':
+                    statusMessage.style.color = 'var(--error-color)';
+                    statusMessage.style.backgroundColor = 'rgba(239, 35, 60, 0.1)';
+                    break;
+                case 'success':
+                    statusMessage.style.color = 'var(--success-color)';
+                    statusMessage.style.backgroundColor = 'rgba(75, 181, 67, 0.1)';
+                    break;
+                case 'processing':
+                    statusMessage.style.color = 'var(--primary-color)';
+                    statusMessage.style.backgroundColor = 'rgba(67, 97, 238, 0.1)';
+                    break;
+                default:
+                    statusMessage.style.color = 'var(--dark-color)';
+                    statusMessage.style.backgroundColor = 'transparent';
+            }
+        }
+        
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                fetch('/stop_text_to_sign');
+            }
+        });
+    });
+</script>
+{% endblock %}

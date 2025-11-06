@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Sign to Voice{% endblock %}
+
+{% block styles %}
+<style>
+    .conversion-container {
+        width: 100%;
+        max-width: 960px;
+        margin: 1.5rem auto;
+        padding: clamp(1.5rem, 3vw, 2.5rem);
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        display: flex;
+        flex-direction: column;
+        gap: clamp(1.5rem, 2.5vw, 2.5rem);
+    }
+
+    .conversion-container h2 {
+        color: var(--primary-color);
+        margin: 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    }
+
+    .video-container {
+        position: relative;
+        width: 100%;
+        min-height: 50px;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: #000;
+        aspect-ratio: 4 / 3;
+    }
+
+    #video-feed {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .detected-section {
+        background: #f8f9fa;
+        padding: clamp(1rem, 2.5vw, 1.5rem);
+        border-radius: var(--border-radius);
+        text-align: center;
+    }
+
+    .detected-section h3 {
+        color: var(--dark-color);
+        margin-bottom: 1rem;
+        font-weight: 500;
+        font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+    }
+
+    #character-display {
+        font-size: clamp(2.75rem, 8vw, 5rem);
+        font-weight: bold;
+        color: var(--primary-color);
+        min-height: clamp(90px, 20vw, 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+        margin: 0 auto;
+        padding: 1rem;
+        width: min(100%, 220px);
+    }
+
+    .controls {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: var(--border-radius);
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: var(--transition);
+        border: none;
+        font-size: 1rem;
+    }
+
+    .stop-btn {
+        background-color: var(--error-color);
+        color: white;
+    }
+
+    .stop-btn:hover {
+        background-color: #d90429;
+        transform: translateY(-2px);
+    }
+
+    .home-btn {
+        background-color: var(--light-color);
+        color: var(--dark-color);
+        text-decoration: none;
+        border: 1px solid #dee2e6;
+    }
+
+    .home-btn:hover {
+        background-color: #e9ecef;
+        transform: translateY(-2px);
+    }
+
+    .instructions {
+        background: #f1f3ff;
+        padding: clamp(1.25rem, 3vw, 1.75rem);
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .instructions h3 {
+        color: var(--primary-color);
+        margin-bottom: 0.75rem;
+        font-size: clamp(1.15rem, 2.5vw, 1.4rem);
+    }
+
+    .instructions ol {
+        padding-left: 1.2rem;
+        margin: 0;
+        font-size: clamp(0.95rem, 2vw, 1rem);
+    }
+
+    .instructions li {
+        margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 992px) {
+        .controls {
+            gap: 0.75rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .conversion-container {
+            padding: clamp(1.25rem, 4vw, 1.75rem);
+        }
+
+        .controls {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .conversion-container {
+            margin: 1rem;
+            padding: clamp(1rem, 6vw, 1.5rem);
+        }
+
+        .instructions {
+            border-left-width: 3px;
+        }
+
+        .controls {
+            gap: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+ <h2><i class="fas fa-sign-language"></i> Sign to Voice Conversion</h2>
+ 
+<div class="conversion-container">
+   
+    
+    <div class="instructions">
+        <h3>How to use:</h3>
+        <ol>
+            <li>Position your hands clearly in the camera view</li>
+            <li>Make standard ASL signs one at a time</li>
+            <li>Hold each sign for 1-2 seconds for detection</li>
+            <li>View the detected character below</li>
+        </ol>
+    </div>
+    
+    <div class="video-container">
+        <img id="video-feed" src="{{ url_for('video_feed_sign') }}" alt="Live sign language capture">
+    </div>
+    
+    <div class="detected-section">
+        <h3>Detected Sign:</h3>
+        <div id="character-display">✋</div>
+    </div>
+    
+    <div class="controls">
+        <button id="stop-btn" class="btn stop-btn">
+            <i class="fas fa-stop"></i> Stop Conversion
+        </button>
+        <a href="/" class="btn home-btn">
+            <i class="fas fa-home"></i> Back to Home
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const stopBtn = document.getElementById('stop-btn');
+        const characterDisplay = document.getElementById('character-display');
+        
+        // Update detected character with animation
+        function updateCharacter() {
+            fetch('/get_character')
+                .then(response => response.text())
+                .then(character => {
+                    if (character && character !== characterDisplay.textContent) {
+                        // Add animation class
+                        characterDisplay.classList.add('character-update');
+                        setTimeout(() => {
+                            characterDisplay.textContent = character;
+                            characterDisplay.classList.remove('character-update');
+                        }, 200);
+                    }
+                    setTimeout(updateCharacter, 500);
+                })
+                .catch(error => {
+                    console.error('Error fetching character:', error);
+                    setTimeout(updateCharacter, 1000);
+                });
+        }
+        
+        // Start updating character when page loads
+        updateCharacter();
+        
+        // Stop button functionality
+        stopBtn.addEventListener('click', function() {
+            stopBtn.disabled = true;
+            stopBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Stopping...';
+            
+            fetch('/stop_sign_to_voice')
+                .then(() => {
+                    window.location.href = '/';
+                })
+                .catch(() => {
+                    stopBtn.disabled = false;
+                    stopBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Conversion';
+                });
+        });
+        
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                fetch('/stop_sign_to_voice');
+            }
+        });
+    });
+</script>
+{% endblock %}

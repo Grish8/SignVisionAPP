@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en" class="{{ 'dark' if theme == 'dark' else '' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Language Interpreter | {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;   /* Vibrant blue */
+            --secondary-color: #3a0ca3; /* Deep indigo */
+            --accent-color: #4cc9f0;    /* Bright cyan accent */
+            --light-color: #f8f9fa;     /* Light background */
+            --dark-color: #212529;      /* Dark text */
+            --surface-color: #ffffff;   /* Card/container background */
+            --success-color: #4ade80;   /* Green */
+            --warning-color: #fbbf24;   /* Amber */
+            --error-color: #ef4444;     /* Red */
+            --border-radius: 16px;
+            --box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        :root.dark {
+            --primary-color: #4895ef;   /* Softer blue */
+            --secondary-color: #560bad; /* Deep purple */
+            --accent-color: #4cc9f0;    /* Bright cyan accent */
+            --light-color: #121212;     /* Dark background */
+            --dark-color: #e9ecef;      /* Light text */
+            --surface-color: #1e1e1e;   /* Card/container background */
+            --box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        header {
+            background: var(--gradient);
+            color: #fff;
+            padding: 1rem 2rem;
+            box-shadow: var(--box-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: #fff;
+            padding: 0.5rem 0;
+        }
+
+        .logo i { 
+            font-size: 1.8rem; 
+            color: var(--accent-color);
+            filter: drop-shadow(0 0 5px rgba(76, 201, 240, 0.5));
+        }
+
+        .logo span {
+            background: linear-gradient(to right, #fff, var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.2rem;
+            border-radius: var(--border-radius);
+            color: #fff;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+        }
+
+        nav a.active {
+            background: rgba(255, 255, 255, 0.25);
+            font-weight: 600;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Signout button specific styles */
+        nav a.signout {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        nav a.signout:hover {
+            background: rgba(239, 68, 68, 0.3);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Ripple effect for nav links */
+        nav a::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 50%;
+            left: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+            transition: transform 0.4s ease;
+            z-index: 0;
+        }
+
+        nav a:active::after {
+            transform: translate(-50%, -50%) scale(2);
+            opacity: 0;
+        }
+
+        nav a span, nav a i {
+            position: relative;
+            z-index: 1;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1200px;
+            margin: auto;
+            padding: 2.5rem 1.5rem;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeSlideIn 0.6s ease forwards;
+        }
+
+        @keyframes fadeSlideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        footer {
+            background: var(--surface-color);
+            color: var(--dark-color);
+            text-align: center;
+            padding: 2rem 1rem;
+            font-size: 0.9rem;
+            margin-top: auto;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .dark footer {
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .theme-switcher {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 1000;
+        }
+
+        .theme-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 1.4rem;
+            background: var(--gradient);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .theme-btn:hover {
+            transform: rotate(15deg) scale(1.1);
+            box-shadow: 0 0 20px rgba(67, 97, 238, 0.5);
+        }
+
+        /* Ripple effect for theme button */
+        .theme-btn::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 50%;
+            left: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s ease;
+        }
+
+        .theme-btn:active::after {
+            transform: translate(-50%, -50%) scale(2);
+            opacity: 0;
+        }
+
+        /* Notification toast for theme change */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            right: 25px;
+            background: var(--surface-color);
+            color: var(--dark-color);
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            z-index: 1001;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .header-content { 
+                flex-direction: column; 
+                gap: 1rem; 
+            }
+            
+            nav { 
+                width: 100%;
+                justify-content: center; 
+            }
+            
+            nav a {
+                flex: 1;
+                justify-content: center;
+                min-width: 120px;
+            }
+            
+            .logo span {
+                font-size: 1.3rem;
+                font-family: 'verdana', sans-serif;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 1rem;
+            }
+            
+            nav { 
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            nav a { 
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            
+            .theme-switcher { 
+                bottom: 15px; 
+                right: 15px; 
+            }
+            
+            .theme-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            
+            main {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        /* Focus styles for accessibility */
+        a:focus, button:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        /* Loading animation for page transitions */
+        .page-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--light-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .page-loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(67, 97, 238, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    <!-- Loading screen -->
+    <div class="page-loading" id="pageLoading">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <header>
+        <div class="header-content">
+            <a href="/" class="logo">
+                <i class="fas fa-hands"></i>
+                <span>Sign-Vision</span>
+            </a>
+            <nav>
+                <a href="/" class="{% if request.path == '/' %}active{% endif %}">
+                    <i class="fas fa-home"></i> <span>Home</span>
+                </a>
+                <a href="/sign_to_voice" class="{% if request.path == '/sign_to_voice' %}active{% endif %}">
+                    <i class="fas fa-sign-language"></i> <span>Sign to Voice</span>
+                </a>
+                <a href="/text_to_sign" class="{% if request.path == '/text_to_sign' %}active{% endif %}">
+                    <i class="fas fa-text"></i> <span>Text to Sign</span>
+                </a>
+                <a href="/voice_to_sign" class="{% if request.path == '/voice_to_sign' %}active{% endif %}">
+                    <i class="fas fa-microphone"></i> <span>Voice to Sign</span>
+                </a>
+                <a href="/settings" class="{% if request.path == '/settings' %}active{% endif %}">
+                    <i class="fas fa-cog"></i> <span>Settings</span>
+                </a>
+                <!-- Signout Link -->
+                <a href="/logout" class="signout" onclick="return confirmSignOut()">
+                    <i class="fas fa-sign-out-alt"></i> <span>Sign Out</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Sign Language Interpreter | Grisham Enos Odhiambo | All rights reserved.</p>
+    </footer>
+
+    <div class="theme-switcher">
+        <button class="theme-btn" id="themeToggle" aria-label="Toggle dark/light mode">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <div class="toast" id="themeToast">
+        Theme changed to <span id="themeStatus">dark</span> mode
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading screen
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('pageLoading');
+                if (loadingScreen) {
+                    loadingScreen.classList.add('hidden');
+                    setTimeout(() => loadingScreen.remove(), 500);
+                }
+            }, 500);
+
+            const themeToggle = document.getElementById('themeToggle');
+            const themeToast = document.getElementById('themeToast');
+            const themeStatus = document.getElementById('themeStatus');
+            const html = document.documentElement;
+            const savedTheme = localStorage.getItem('theme') || '{{ theme }}';
+
+            function setTheme(theme) {
+                if (theme === 'dark') {
+                    html.classList.add('dark');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                    themeStatus.textContent = 'dark';
+                } else {
+                    html.classList.remove('dark');
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                    themeStatus.textContent = 'light';
+                }
+                localStorage.setItem('theme', theme);
+                
+                // Show toast notification
+                themeToast.classList.add('show');
+                setTimeout(() => {
+                    themeToast.classList.remove('show');
+                }, 3000);
+            }
+
+            setTheme(savedTheme);
+
+            themeToggle.addEventListener('click', () => {
+                const isDark = html.classList.toggle('dark');
+                setTheme(isDark ? 'dark' : 'light');
+                
+                // Send theme preference to server
+                fetch('/update_theme', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({theme: isDark ? 'dark' : 'light'})
+                }).catch(console.error);
+            });
+
+            // Add smooth transitions for page navigation
+            document.addEventListener('click', function(e) {
+                if (e.target.matches('a') && e.target.getAttribute('href').startsWith('/')) {
+                    e.preventDefault();
+                    const href = e.target.getAttribute('href');
+                    
+                    // Show loading screen
+                    const loadingScreen = document.createElement('div');
+                    loadingScreen.className = 'page-loading';
+                    loadingScreen.innerHTML = '<div class="loading-spinner"></div>';
+                    document.body.appendChild(loadingScreen);
+                    
+                    // Navigate after a brief delay for animation
+                    setTimeout(() => {
+                        window.location.href = href;
+                    }, 300);
+                }
+            });
+        });
+
+        function confirmSignOut() {
+            if (confirm('Are you sure you want to sign out?')) {
+                // Optional: Clear client-side storage
+                if (typeof(Storage) !== "undefined") {
+                    localStorage.clear();
+                }
+                return true; // Allow the link to proceed
+            }
+            return false; // Prevent the link if user cancels
+        }
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
