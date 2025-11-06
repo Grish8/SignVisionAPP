@@ -3,11 +3,6 @@ from collections import deque
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 import os
-# Suppress TensorFlow oneDNN warnings
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-# Fix Windows encoding issues
-if os.name == 'nt':  # Windows
-    os.environ['PYTHONIOENCODING'] = 'utf-8'
 import cv2
 import pyaudio
 import numpy as np
@@ -434,7 +429,6 @@ ar_headset = None
 
 
 #AR display signs
-
 class ARSignLanguageDisplay:
     def __init__(self, signs_folder="static/assets"):
         # Initialize camera
@@ -1501,20 +1495,4 @@ if __name__ == '__main__':
 
     
     preload_assets()
-    
-    # Ensure Flask runs on port 5000 consistently
-    port = int(os.environ.get('PORT', 5000))
-    host = os.environ.get('HOST', '127.0.0.1')
-    
-    print("")
-    print("======= SignVision AR Application =======")
-    print(f"Flask AR App: http://{host}:{port}")
-    print("")
-    print("*** WEBSITE SHOULD OPEN AUTOMATICALLY! ***")
-    print("Website URL: http://localhost:5173")
-    print("")
-    print("Flow: Login Website (5173) -> AR Application (5000)")
-    print("If browser doesn't open, visit: http://localhost:5173")
-    print("=========================================")
-    
-    app.run(host=host, port=port, debug=True)
+    app.run(debug=True)
